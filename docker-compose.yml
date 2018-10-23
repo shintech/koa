@@ -1,0 +1,13 @@
+version: '3'
+
+services: 
+  koa:
+    build: .
+    container_name: koa
+    env_file:
+      - ./koa.env
+    ports:
+      - "8000:8000"
+    restart: always
+    volumes: 
+      - ./data/log:/shintech/log

@@ -1,0 +1,9 @@
+/node_modules
+/.next
+*.log
+/log/*
+/dist
+/test.js
+/test.sql
+/data
+/uploads/*
