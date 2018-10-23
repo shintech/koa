@@ -1,9 +1,13 @@
 const Koa = require('koa')
 const router = require('./router')
 const compress = require('koa-compress')
+const views = require('koa-views')
+const path = require('path')
 
-module.exports = ({ logger, port, environment }) => {
+module.exports = ({ logger, port, hostname, environment }) => {
   const app = new Koa()
+
+  app.use(views(path.join(__dirname, 'views'), { extension: 'pug' }))
 
   app.use(async (ctx, next) => {
     await next()
@@ -14,6 +18,7 @@ module.exports = ({ logger, port, environment }) => {
   app.use(async (ctx, next) => {
     const start = Date.now()
     await next()
+
     const ms = Date.now() - start
     ctx.set('X-Response-Time', `${ms}ms`)
   })
@@ -24,6 +29,12 @@ module.exports = ({ logger, port, environment }) => {
 
   app.use(router.routes())
   app.use(router.allowedMethods())
+
+  router.get('/', async ctx => {
+    await ctx.render('index', {
+      hostname: hostname
+    })
+  })
 
   app.use((ctx, next) => {
     ctx.body = {
