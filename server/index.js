@@ -4,7 +4,7 @@ const compress = require('koa-compress')
 const views = require('koa-views')
 const path = require('path')
 
-module.exports = ({ logger, port, hostname, environment }) => {
+module.exports = ({ logger, port, environment }) => {
   const app = new Koa()
 
   app.use(views(path.join(__dirname, 'views'), { extension: 'pug' }))
@@ -32,7 +32,7 @@ module.exports = ({ logger, port, hostname, environment }) => {
 
   router.get('/', async ctx => {
     await ctx.render('index', {
-      hostname: hostname
+      hostname: ctx.req.headers.host
     })
   })
 

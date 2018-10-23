@@ -1,12 +1,12 @@
 {
   "name": "express",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
     "start": "node .",
     "test": "NODE_ENV=test jest --verbose -c testRunner.js",
-    "dev": "NODE_ENV=development HOSTNAME=shintech.ninja PORT=8000 nodemon .",
+    "dev": "NODE_ENV=development PORT=8000 nodemon .",
     "lint": "eslint . --fix"
   },
   "dependencies": {
