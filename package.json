@@ -1,6 +1,6 @@
 {
   "name": "express",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
@@ -13,9 +13,8 @@
     "koa": "^2.5.3",
     "koa-compress": "^3.0.0",
     "koa-router": "^7.4.0",
-    "koa-static": "^5.0.0",
-    "koa-views": "^6.1.4",
     "pug": "^2.0.3",
+    "shintech-logger": "^0.0.1",
     "winston": "^3.1.0"
   },
   "devDependencies": {
