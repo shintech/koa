@@ -1,8 +1,14 @@
 const Router = require('koa-router')
 const { trees } = require('./routes')
 
-const router = new Router()
+module.exports = new Router({
+  prefix: '/api'
+})
 
-router.get('/api/trees', trees.getTrees)
+  .use(async (ctx, next) => {
+    await next()
 
-module.exports = router
+    ctx.set('Content-Type', 'application/json')
+  })
+
+  .get('/trees', trees.getTrees)

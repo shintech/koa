@@ -25,6 +25,12 @@ module.exports = ({ logger, port, environment, root }) => {
     threshold: 1024
   }))
 
+  app.use(async (ctx, next) => {
+    ctx.logger = logger
+
+    await next()
+  })
+
   app.use(router.routes())
   app.use(router.allowedMethods())
 
