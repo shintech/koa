@@ -1,12 +1,10 @@
-const environment = process.env['NODE_ENV']
-const port = process.env['PORT'] || 8000
-const host = process.env['HOST'] || 'localhost'
-const root = __dirname
-
-const logger = require('shintech-logger')({ environment })
-const server = require('./server')({ logger, environment, port, root })
 const pkg = require('./package.json')
 
-server.listen(port, host, () => {
-  logger.info(`${pkg.name} - version: ${pkg.version} - listening on port ${port}...`)
-})
+const root = __dirname
+const environment = process.env['NODE_ENV']
+const port = process.env['PORT'] || 8000
+const host = process.env['HOST'] || '127.0.0.1'
+
+const logger = require('shintech-logger')({ environment })
+
+if (!module.parent) require('./server')({ pkg, logger, environment, port, host, root })

@@ -1,18 +1,41 @@
 const Koa = require('koa')
-const router = require('./router')
 const compress = require('koa-compress')
+const bodyParser = require('koa-bodyparser')
+const router = require('./router')
 
-module.exports = ({ logger, port, environment, root }) => {
-  const app = new Koa()
+module.exports = (config) => {
+  const { logger, db } = config
 
-  app.use(async (ctx, next) => {
+  return configApp({
+    config,
+    server: configServer({ logger, db })
+  })
+}
+
+function configServer ({ logger, db }) {
+  const server = new Koa()
+
+  server.use(async (ctx, next) => {
     await next()
 
     const rt = ctx.response.get('X-Response-Time')
-    logger.info(`${ctx.method} ${ctx.status} ${ctx.url} - ${rt}`)
+    const message = `${ctx.method} ${ctx.status} ${ctx.url} - ${rt}`
+
+    switch (ctx.status) {
+      case 200:
+        logger.info(message)
+        break
+
+      case 500:
+        logger.error(message)
+        break
+
+      default:
+        logger.warn(message)
+    }
   })
 
-  app.use(async (ctx, next) => {
+  server.use(async (ctx, next) => {
     const start = Date.now()
 
     await next()
@@ -21,25 +44,49 @@ module.exports = ({ logger, port, environment, root }) => {
     ctx.set('X-Response-Time', `${ms}ms`)
   })
 
-  app.use(compress({
+  server.use(bodyParser())
+  server.use(compress({
     threshold: 1024
   }))
 
-  app.use(async (ctx, next) => {
+  server.use(async (ctx, next) => {
     ctx.logger = logger
+    ctx.db = db
 
     await next()
   })
 
-  app.use(router.routes())
-  app.use(router.allowedMethods())
+  server.use(router.routes())
+  server.use(router.allowedMethods())
 
-  app.use((ctx, next) => {
+  server.use((ctx, next) => {
     ctx.body = {
       status: 'error'
     }
 
     ctx.status = 404
+  })
+
+  return server
+}
+
+function configApp ({ config, server }) {
+  const { pkg, logger, host, port } = config
+
+  const app = server.listen(port, host)
+
+  app.on('listening', () => {
+    logger.info(`${pkg.name} - version: ${pkg.version} - listening at ${host}:${port}...`)
+  })
+
+  app.on('close', () => {
+    logger.warn('Shutting down server...')
+
+    logger.info('Goodbye...')
+  })
+
+  process.on('SIGINT', () => {
+    app.close()
   })
 
   return app
