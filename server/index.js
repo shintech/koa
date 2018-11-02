@@ -1,18 +1,10 @@
 const Koa = require('koa')
 const compress = require('koa-compress')
 const bodyParser = require('koa-bodyparser')
+const app = require('./app')
 const router = require('./router')
 
-module.exports = (config) => {
-  const { logger, db } = config
-
-  return configApp({
-    config,
-    server: configServer({ logger, db })
-  })
-}
-
-function configServer ({ logger, db }) {
+module.exports = ({ logger, db, environment, port, pkg }) => {
   const server = new Koa()
 
   server.use(async (ctx, next) => {
@@ -67,27 +59,5 @@ function configServer ({ logger, db }) {
     ctx.status = 404
   })
 
-  return server
-}
-
-function configApp ({ config, server }) {
-  const { pkg, logger, host, port } = config
-
-  const app = server.listen(port, host)
-
-  app.on('listening', () => {
-    logger.info(`${pkg.name} - version: ${pkg.version} - listening at ${host}:${port}...`)
-  })
-
-  app.on('close', () => {
-    logger.warn('Shutting down server...')
-
-    logger.info('Goodbye...')
-  })
-
-  process.on('SIGINT', () => {
-    app.close()
-  })
-
-  return app
+  return (environment) === 'test' ? app({ db, server, port }) : server
 }
