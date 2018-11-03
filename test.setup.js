@@ -8,4 +8,10 @@ const host = 'localhost'
 
 const logger = require('shintech-logger')({ environment })
 
-global._server = require(path.join(__dirname, 'server'))({ pkg, logger, environment, port, host, root })
+const server = require(path.join(__dirname, 'server'))({ pkg, logger, environment, port, host, root }).listen()
+
+global._server = server
+
+server.on('close', () => {
+  logger.info('close...') // close the database connection here
+})

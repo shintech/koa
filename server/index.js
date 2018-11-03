@@ -1,7 +1,6 @@
 const Koa = require('koa')
 const compress = require('koa-compress')
 const bodyParser = require('koa-bodyparser')
-const app = require('./app')
 const router = require('./router')
 
 module.exports = ({ logger, db, environment, port, pkg }) => {
@@ -59,5 +58,5 @@ module.exports = ({ logger, db, environment, port, pkg }) => {
     ctx.status = 404
   })
 
-  return (environment) === 'test' ? app({ db, server, port }) : server
+  return server
 }
