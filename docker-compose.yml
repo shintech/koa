@@ -5,7 +5,7 @@ services:
     build: .
     container_name: koa
     env_file:
-      - ./koa.env
+      - ./config/.env
     ports:
       - "8000:8000"
     restart: always

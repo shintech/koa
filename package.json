@@ -1,11 +1,11 @@
 {
-  "name": "koa",
-  "version": "0.1.2",
+  "name": "koa-server",
+  "version": "0.2.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
     "start": "node .",
-    "test": "NODE_ENV=test jest --verbose -c testRunner.js",
+    "test:all": "NODE_ENV=test jest --verbose -c config/jest/jest.config.js",
     "dev": "nodemon .",
     "lint": "eslint . --fix"
   },
@@ -15,7 +15,7 @@
     "koa-compress": "^3.0.0",
     "koa-router": "^7.4.0",
     "pug": "^2.0.3",
-    "shintech-logger": "^0.0.1",
+    "shintech-logger": "^0.0.3",
     "winston": "^3.1.0"
   },
   "devDependencies": {

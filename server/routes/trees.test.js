@@ -1,18 +1,18 @@
 /* eslint-env jest */
 
-var request = require('supertest').agent(_server)
+const request = require('supertest')
 
-console.log = jest.fn()
-
-afterAll(async () => {
-  await _server.close()
-})
-
-describe('SERVER -> GET /api/trees -> getTrees()..', () => {
-  let ctx
+describe('SERVER -> GET /api/trees..', () => {
+  let ctx, app
 
   beforeAll(async () => {
-    ctx = await request.get('/api/trees')
+    app = _server.listen()
+
+    ctx = await request(app).get('/api/trees')
+  })
+
+  afterAll(() => {
+    app.close()
   })
 
   it('expect ctx to have property status...', () => {

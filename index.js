@@ -1,24 +1,21 @@
+const createServer = require('./server')
+const createLogger = require('shintech-logger')
+const api = require('./server/router')
 const pkg = require('./package.json')
 
-const root = __dirname
+const PORT = parseInt(process.env['PORT']) || 8000
+const NODE_ENV = process.env['NODE_ENV'] || 'development'
 
-const environment = process.env['NODE_ENV']
-const port = process.env['PORT'] || 8000
-const host = process.env['HOST'] || '127.0.0.1'
+const logger = createLogger()
 
-const logger = require('shintech-logger')({ environment })
-const server = require('./server')({ pkg, logger, environment, port, root })
+logger.info(`initializing -> ${pkg.name} - version: ${pkg.version}...`)
+logger.info(`config: ${JSON.stringify({ PORT, NODE_ENV })}...`)
 
-const app = server.listen(port, () => {
-  logger.info(`${pkg.name} - version: ${pkg.version} - listening at ${host}:${port}...`)
-  logger.info(`served from ${root}...`)
-})
+const server = createServer({ api, logger })
 
-app.on('close', () => {
-  logger.warn('shutting down server...')
-  logger.info('goodbye...')
-})
+const listening = (app, port, host) => logger.info(`${app} -> listening at ${host}:${port}...`)
+const handleError = (err) => logger.error(err.message)
 
-process.on('SIGINT', () => {
-  app.close()
-})
+server.listen(PORT)
+  .on('listening', () => listening('server', PORT, '0.0.0.0'))
+  .on('error', err => handleError(err))
